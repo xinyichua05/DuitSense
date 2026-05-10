@@ -1,20 +1,6 @@
 /**
  * MEMBER 5 - GAMIFICATION & PROJECTION ENGINE
  * Main integration point for all projection, gamification, and reward systems
- *
- * Usage:
- * const member5 = require('./services/index');
- *
- * // Projection
- * const projection = member5.projection.generateDualProjection({...});
- *
- * // Gamification
- * const reward = member5.rewards.spinWheel();
- * const achievement = member5.achievements.awardAchievement({...});
- *
- * // Streaks & XP
- * const streak = member5.streaks.calculateStreakStatus({...});
- * const xpReward = member5.streaks.calculateStreakXPReward(10, 1.5);
  */
 
 // ========== PROJECTION ENGINE ==========
@@ -24,8 +10,8 @@ const simulationUtils = require("./simulation_utils");
 
 const projection = {
   epf: epfCalculator,
-  dualProjection: projectionEngine,
-  microChanges: simulationUtils,
+  engine: projectionEngine,
+  simulation: simulationUtils,
 };
 
 // ========== GAMIFICATION: STREAKS & XP ==========
@@ -62,16 +48,18 @@ module.exports = {
   analysis,
   achievements,
 
-  // Utility: Get overall user gamification status
+  /**
+   * Get overall user gamification status
+   */
   getUserGamificationStatus: (params) => {
     const {
       userId,
-      currentStreak,
-      challengesCompleted,
-      totalXP,
-      rewardsEarned,
-      awardedAchievements,
-    } = params;
+      currentStreak = 0,
+      challengesCompleted = 0,
+      totalXP = 0,
+      rewardsEarned = [],
+      awardedAchievements = [],
+    } = params || {};
 
     return {
       userId,
@@ -80,8 +68,8 @@ module.exports = {
       streakMultiplier: streakSystem.calculateStreakMultiplier(currentStreak),
       challengesCompleted,
       totalXP,
-      rewardsEarned: rewardsEarned?.length || 0,
-      achievementsUnlocked: awardedAchievements?.length || 0,
+      rewardsEarned: rewardsEarned.length,
+      achievementsUnlocked: awardedAchievements.length,
       gamificationLevel: calculateGamificationLevel(
         currentStreak,
         challengesCompleted,
@@ -90,41 +78,47 @@ module.exports = {
     };
   },
 
-  // Utility: Get complete dashboard data for user
+  /**
+   * Get complete dashboard data for user
+   */
   getCompleteDashboard: (params) => {
-    const { streakData, projectionData, rewardData, achievementData } = params;
+    const {
+      streakData = {},
+      projectionData = {},
+      rewardData = {},
+      achievementData = {},
+    } = params || {};
 
     return {
       streak: {
-        current: streakData.currentStreak,
-        status: streakData.streakStatus,
+        current: streakData.currentStreak || 0,
+        status: streakData.streakStatus || "inactive",
         visualization: streakSystem.getStreakVisualization(
-          streakData.currentStreak,
+          streakData.currentStreak || 0,
         ),
         motivation: streakSystem.getStreakMotivationalMessage(
-          streakData.currentStreak,
+          streakData.currentStreak || 0,
         ),
       },
       projection: {
-        current: projectionData.current,
-        improved: projectionData.improved,
-        summary: projectionData.projectionSummary,
+        current: projectionData.current || null,
+        improved: projectionData.improved || null,
+        summary: projectionData.projectionSummary || "",
       },
       rewards: {
-        spinAvailable: rewardData.spinEntriesAvailable > 0,
-        spinsRemaining: rewardData.spinEntriesAvailable,
+        spinAvailable: (rewardData.spinEntriesAvailable || 0) > 0,
+        spinsRemaining: rewardData.spinEntriesAvailable || 0,
       },
       achievements: {
-        total: achievementData.total,
-        newUnlocks: achievementData.newUnlocks,
+        total: achievementData.total || 0,
+        newUnlocks: achievementData.newUnlocks || 0,
       },
     };
   },
 };
 
 /**
- * Calculate user's gamification level based on activity
- * @returns {object} Level info
+ * Calculate user's gamification level based on XP progression
  */
 function calculateGamificationLevel(
   currentStreak,
@@ -132,25 +126,35 @@ function calculateGamificationLevel(
   totalXP,
 ) {
   let level = 1;
-  let nextLevelXP = 500;
 
   if (totalXP >= 500) level = 2;
   if (totalXP >= 1500) level = 3;
   if (totalXP >= 3500) level = 4;
   if (totalXP >= 7000) level = 5;
 
-  const progressToNextLevel = Math.min(totalXP - level * 500, nextLevelXP);
-  const progressPercent = Math.round((progressToNextLevel / nextLevelXP) * 100);
+  // Prevent negative XP progression
+  const prevLevelXP = (level - 1) * 500;
+  const nextLevelXP = level * 500;
+
+  const progressToNextLevel = Math.max(0, totalXP - prevLevelXP);
+
+  const progressPercent = Math.min(
+    100,
+    Math.round((progressToNextLevel / (nextLevelXP - prevLevelXP)) * 100),
+  );
 
   return {
     level,
     totalXP,
-    nextLevelXP: level * 500 + 500,
+    nextLevelXP,
     progressPercent,
     badge: getGamificationBadge(level),
   };
 }
 
+/**
+ * Get badge based on level
+ */
 function getGamificationBadge(level) {
   const badges = {
     1: "🌱 Sprout",
@@ -159,5 +163,6 @@ function getGamificationBadge(level) {
     4: "🏔️ Mountain",
     5: "🌟 Star",
   };
+
   return badges[level] || "🌟 Legend";
 }

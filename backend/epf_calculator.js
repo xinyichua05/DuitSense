@@ -11,6 +11,9 @@ const TOTAL_CONTRIBUTION_RATE =
   EMPLOYEE_CONTRIBUTION_RATE + EMPLOYER_CONTRIBUTION_RATE; // 24%
 const BNM_INFLATION_RATE = 0.032; // 3.2% p.a. inflation per BNM
 const COMPOUNDING_FREQUENCY = 12; // Monthly compounding
+// In epf_calculator.js, inside projectEPFBalance():
+const monthlyReturn = balance * (0.05 / 12); // 5% p.a. nominal
+// Remove the inflation multiplier entirely for demo
 
 /**
  * Calculate EPF contributions for a single month
