@@ -1,50 +1,215 @@
-# Welcome to your Expo app 👋
+# DuitSense
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+DuitSense is an AI-powered financial literacy and expense management platform designed for young adults in Malaysia. It combines personalized AI coaching with gamification to make financial management engaging, educational, and rewarding. Users build healthy spending habits through interactive challenges, track their financial journey with intelligent projections, and compete with friends on a real-time leaderboard.
 
-## Get started
+## 🚀 Key Features
 
-1. Install dependencies
+**AI-Powered Personalization**
 
-   ```bash
-   npm install
-   ```
+- Persona-based financial classification (8 archetypes: Saver, Spender, Investor, Debtor, Planner, ImpulseBuyer, Traditionalist, Modernist)
+- AI-generated challenges tailored to spending patterns and financial goals
+- Behavior analysis with cognitive bias detection and recommendations
+- Festival-specific budget planning powered by Gemini AI
 
-2. Start the app
+**Gamification & Engagement**
 
-   ```bash
-   npx expo start
-   ```
+- 7-day streak system with XP multipliers (up to 2x XP at day 7)
+- Daily financial literacy quizzes with instant feedback and explanations
+- Challenge completion tracking with adaptive difficulty
+- Spin-the-wheel reward system with vouchers, TnG reloads, and XP boosters
 
-In the output, you'll find options to open the app in a
+**Financial Analytics**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Real-time expense tracking by category with peer comparison
+- Dual-trajectory financial projections (current vs improved path)
+- EPF (Employee Provident Fund) calculator with retirement projections
+- ROI simulation and savings impact analysis
+- Monthly behavior insights with actionable recommendations
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+**Social & Competition**
 
-## Get a fresh project
+- Friends leaderboard with weekly XP rankings
+- Squad achievement system for team-based financial goals
+- Peer comparison by age bracket for spending benchmarking
+- Weekly rewards for top 3 performers
 
-When you're ready, run:
+**Educational Content**
+
+- Malaysian-focused financial quiz (PIDM protection, compound interest, good vs bad debt)
+- Budget framework education (50/30/20 rule)
+- Festival financial planning guides
+
+## 🧱 Architecture Overview
+
+### Backend (`/backend`)
+
+- **Express.js Server**: RESTful API for all financial and gamification services
+- **AI Personalization** (`/backend/ai_personalisation`): Persona classification, challenge generation, behavior analysis
+- **Data Integration** (`/backend/data_integration`): Database, Redis caching, peer comparison engine, Gemini AI client
+- **Projection & Rewards** (`/backend/projection_reward`): EPF calculator, financial projections, streak system, spin wheel engine
+- **Controllers**: Expense, challenge, insight, projection, and leaderboard management
+- **Background Jobs**: Weekly leaderboard reset and festive mode scheduling (node-cron)
+
+### Frontend (`/frontend`)
+
+- **React Native + Expo**: iOS/Android mobile app with web support
+- **Expo Router**: File-based navigation
+- **Tailwind CSS & NativeWind**: Responsive design system
+- **Reanimated Animations**: Smooth, performant UI transitions
+- **Charts**: Real-time financial visualization with react-native-chart-kit
+
+### Key Integrations
+
+- **Gemini AI**: Advanced natural language processing for personalized insights
+- **Redis Cache**: High-speed caching for insights and user data
+- **PostgreSQL**: Relational database for user profiles, expenses, challenges
+- **Node-cron**: Scheduled background jobs for daily/weekly tasks
+
+## ⚙️ Prerequisites
+
+- **Node.js 18+** / npm
+- **Python 3.8+** (optional, for backend data processing)
+- **.env file** with:
+  - `GEMINI_API_KEY`: Google Gemini API key
+  - `DATABASE_URL`: PostgreSQL connection string
+  - `REDIS_URL`: Redis server URL
+  - `PORT`: Backend server port (default 5000)
+
+## 🧩 Backend Setup
 
 ```bash
-npm run reset-project
+cd backend
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Create `.env` file:
 
-## Learn more
+```
+GEMINI_API_KEY=your_gemini_api_key
+DATABASE_URL=postgresql://user:password@localhost:5432/duitsense
+REDIS_URL=redis://localhost:6379
+PORT=5000
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Start the backend server:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+node server.js
+```
 
-## Join the community
+The API will be available at: `http://localhost:5000`
 
-Join our community of developers creating universal apps.
+**Available API Endpoints:**
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `GET/POST /api/expenses` - Create and retrieve expenses
+- `GET /api/expenses/peer-compare` - Peer comparison data
+- `POST /api/challenges/generate` - Generate AI challenges
+- `PATCH /api/challenges/:id/complete` - Complete challenges
+- `GET /api/insights/monthly` - Monthly behavior insights
+- `GET /api/projection` - Financial projections
+- `GET /api/leaderboard` - Friends leaderboard
+- `POST /api/leaderboard/spin` - Spin the wheel
+
+## 🖥 Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run web
+```
+
+or for mobile:
+
+```bash
+npm run ios      # iOS simulator
+npm run android  # Android emulator
+npm start        # Expo Go
+```
+
+The React UI will be served at: `http://localhost:5173` (web) or accessible via Expo Go
+
+## 📊 Using DuitSense
+
+1. **Onboarding**: Complete financial personality quiz (5 questions)
+2. **Dashboard**: View current expenses, streak status, and XP progress
+3. **Expense Logging**: Quick-add expenses with category and notes
+4. **AI Challenges**: Complete personalized micro-challenges to earn XP
+5. **Quiz Daily**: Answer financial literacy questions for bonus XP
+6. **Projections**: Simulate savings impact on long-term wealth (age 65)
+7. **Leaderboard**: Compete with friends weekly; top 3 earn bonus spins
+8. **Rewards**: Spin the wheel to win vouchers, TnG reloads, or XP boosters
+9. **Insights**: Review monthly behavior analysis and peer benchmarking
+
+## 📱 Project Structure
+
+```
+DuitSense/
+├── backend/                          # Express.js API server
+│   ├── ai_personalisation/           # AI persona & challenge generation
+│   ├── controllers/                  # Route handlers
+│   ├── data_integration/             # DB, cache, Gemini client
+│   ├── middleware/                   # Auth, error handling
+│   ├── projection_reward/            # Financial analysis & gamification
+│   ├── routes/                       # API endpoints
+│   ├── services/                     # Business logic
+│   └── server.js                     # Entry point
+├── frontend/                         # React Native + Expo app
+│   ├── app/                          # Screen components
+│   ├── components/                   # Reusable UI components
+│   ├── hooks/                        # Custom React hooks
+│   ├── constants/                    # Theme, config
+│   └── web_src/                      # Web build source
+├── components/                       # Shared UI components
+├── hooks/                            # Shared hooks
+├── constants/                        # App-wide constants
+└── app.json                          # Expo config
+```
+
+## 🔐 Authentication
+
+Currently using mock authentication via headers. To integrate real auth:
+
+- Set `X-Mock-User-Id` header for user identification
+- Replace `/backend/middleware/mockAuth.js` with real JWT/OAuth implementation
+
+## 📝 Environment Configuration
+
+Key environment variables:
+
+| Variable         | Purpose               | Example                            |
+| ---------------- | --------------------- | ---------------------------------- |
+| `GEMINI_API_KEY` | AI model access       | `AIzaSy...`                        |
+| `DATABASE_URL`   | PostgreSQL connection | `postgresql://localhost/duitsense` |
+| `REDIS_URL`      | Cache layer           | `redis://localhost:6379`           |
+| `PORT`           | Backend port          | `5000`                             |
+
+## 🚀 Deployment
+
+**Backend:**
+
+- Deploy to Heroku, Railway, or Render
+- Ensure PostgreSQL and Redis services are available
+- Set environment variables in deployment platform
+
+**Frontend:**
+
+- Web: `npm run build` then deploy to Vercel, Netlify, or AWS S3
+- Mobile: Use Expo Application Services (EAS) for iOS/Android builds
+
+## 🛣️ Roadmap
+
+- [ ] Real OAuth2 authentication
+- [ ] Multi-friend squad system
+- [ ] Push notifications for streak reminders
+- [ ] Merchant integration for real transactions
+- [ ] Advanced reporting and tax insights
+- [ ] Financial goal tracking
+- [ ] Automated bill tracking and payment reminders
+
+## 📄 License
+
+This project is proprietary. All rights reserved.
+
+## 🤝 Contributing
+
+For contributors, please follow the existing code style and submit pull requests with clear descriptions.
