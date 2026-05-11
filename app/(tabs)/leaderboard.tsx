@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
-import Animated, { FadeInDown, FadeInRight, FadeOutLeft } from 'react-native-reanimated';
-import { Trophy, Medal, Award, TrendingUp, Gift } from 'lucide-react-native';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import { Trophy, TrendingUp, Gift } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import TopBar from '../components/TopBar';
 
-const squadLeaderboard = [
+const globalLeaderboard = [
   { rank: 1, name: 'Sarah M.', xp: 2847, avatar: '🏆', change: 2 },
   { rank: 2, name: 'Ahmad K.', xp: 2654, avatar: '🥈', change: -1 },
   { rank: 3, name: 'You (Amir)', xp: 2247, avatar: '🎯', change: 1, isUser: true },
@@ -15,17 +15,12 @@ const squadLeaderboard = [
   { rank: 6, name: 'Lin W.', xp: 1856, avatar: '💎', change: 2 },
   { rank: 7, name: 'Fatimah A.', xp: 1742, avatar: '🌟', change: -2 },
   { rank: 8, name: 'David L.', xp: 1623, avatar: '⚡', change: 1 },
-];
-
-const weeklyLeaderboard = [
-  { rank: 1, name: 'Ahmad K.', xp: 847, avatar: '🥇', badge: 'On Fire' },
-  { rank: 2, name: 'You (Amir)', xp: 654, avatar: '🎯', badge: 'Climbing', isUser: true },
-  { rank: 3, name: 'Sarah M.', xp: 603, avatar: '🏆', badge: 'Steady' },
+  { rank: 9, name: 'John D.', xp: 1540, avatar: '🔥', change: 0 },
+  { rank: 10, name: 'Siti H.', xp: 1420, avatar: '✨', change: -1 },
 ];
 
 export default function LeaderboardScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'squad' | 'weekly'>('squad');
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F1115]">
@@ -52,8 +47,8 @@ export default function LeaderboardScreen() {
                     <Trophy size={32} color="white" />
                   </View>
                   <View>
-                    <Text className="text-white font-black text-xl tracking-tight">You're in Top 8%</Text>
-                    <Text className="text-white/80 font-bold text-sm">Keep up the great work!</Text>
+                    <Text className="text-white font-black text-xl tracking-tight">Global Ranking</Text>
+                    <Text className="text-white/80 font-bold text-sm">You're in Top 8%</Text>
                   </View>
                 </View>
                 <View className="items-end">
@@ -64,34 +59,30 @@ export default function LeaderboardScreen() {
             </LinearGradient>
           </Animated.View>
 
-          <View className="flex-row bg-[#1A1D24] rounded-2xl p-1 mb-2">
+          <Animated.View
+            entering={FadeInDown.delay(150)}
+            className="bg-[#1A1D24] border border-[#FFD600]/20 rounded-[24px] p-5 flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center gap-4">
+              <View className="w-12 h-12 rounded-full bg-[#FFD600]/20 items-center justify-center">
+                <Gift size={24} color="#FFD600" />
+              </View>
+              <View>
+                <Text className="text-white font-bold text-lg">Daily Spin</Text>
+                <Text className="text-[#9CA3AF] text-sm font-medium">Win exclusive rewards!</Text>
+              </View>
+            </View>
             <TouchableOpacity
-              onPress={() => setActiveTab('squad')}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center overflow-hidden`}
+              onPress={() => router.push('/spin')}
+              className="bg-[#FFD600] px-4 py-2 rounded-xl"
             >
-              {activeTab === 'squad' && (
-                <LinearGradient colors={['#5B8DEF', '#7C4DFF']} className="absolute inset-0" />
-              )}
-              <Text className={`text-base font-bold relative z-10 ${
-                activeTab === 'squad' ? 'text-white' : 'text-[#9CA3AF]'
-              }`}>Squad</Text>
+              <Text className="text-[#0F1115] font-black">SPIN</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setActiveTab('weekly')}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center overflow-hidden`}
-            >
-              {activeTab === 'weekly' && (
-                <LinearGradient colors={['#5B8DEF', '#7C4DFF']} className="absolute inset-0" />
-              )}
-              <Text className={`text-base font-bold relative z-10 ${
-                activeTab === 'weekly' ? 'text-white' : 'text-[#9CA3AF]'
-              }`}>Weekly</Text>
-            </TouchableOpacity>
-          </View>
+          </Animated.View>
 
           <View className="space-y-3 gap-3">
-            {squadLeaderboard.map((player) => (
+            <Text className="text-white font-bold text-xl tracking-tight px-1 mb-2">Global Leaderboard</Text>
+            {globalLeaderboard.map((player) => (
               <Animated.View
                 key={player.rank}
                 entering={FadeInRight.delay(200 + player.rank * 50)}

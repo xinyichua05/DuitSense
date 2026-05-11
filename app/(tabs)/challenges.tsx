@@ -1,44 +1,47 @@
+import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
-import Animated, { FadeInDown, FadeInRight, ZoomIn } from 'react-native-reanimated';
-import { Gift, Users, Sparkles } from 'lucide-react-native';
+import Animated, { 
+  FadeInDown, 
+  FadeInRight, 
+  ZoomIn, 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withSequence, 
+  withSpring
+} from 'react-native-reanimated';
+import { Sparkles } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import TopBar from '../components/TopBar';
 
-const challenges = [
+const challengesData = [
   {
     id: 1,
-    title: 'Raya Saving Challenge',
-    description: 'Save RM500 before Hari Raya',
-    progress: 68,
+    title: 'Qurban Savings Plan',
+    description: 'Save RM200 for your Qurban contribution',
+    progress: 35,
     xp: 500,
-    coins: 200,
-    energy: 40,
-    emoji: '🌙',
+    emoji: '🐏',
     difficulty: 'Medium',
     colors: ['#00C853', '#FFD600'] as const,
   },
   {
     id: 2,
-    title: 'No Bubble Tea for 5 Days',
-    description: 'Avoid unnecessary sweets',
-    progress: 40,
-    xp: 120,
-    coins: 50,
-    energy: 20,
-    emoji: '🧋',
+    title: 'Haji Season Fasting',
+    description: 'Save RM50 by preparing home meals during Arafah',
+    progress: 0,
+    xp: 150,
+    emoji: '🕋',
     difficulty: 'Easy',
     colors: ['#5B8DEF', '#7C4DFF'] as const,
   },
   {
     id: 3,
-    title: 'CNY Budget Master',
-    description: 'Stay within CNY budget',
-    progress: 85,
+    title: 'Rayagift Budget',
+    description: 'Stay within budget for Eid gifts',
+    progress: 75,
     xp: 300,
-    coins: 150,
-    energy: 30,
-    emoji: '🧧',
+    emoji: '🎁',
     difficulty: 'Hard',
     colors: ['#FF5252', '#FFD600'] as const,
   },
@@ -46,6 +49,25 @@ const challenges = [
 
 export default function ChallengesScreen() {
   const router = useRouter();
+  const [xp, setXp] = useState(2247);
+  const [progress, setProgress] = useState(68);
+  const mascotScale = useSharedValue(1);
+
+  const mascotStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: mascotScale.value }]
+  }));
+
+  const handleMarkAsDone = (challengeXp: number) => {
+    // Animate mascot
+    mascotScale.value = withSequence(
+      withSpring(1.3),
+      withSpring(1)
+    );
+
+    // Update stats
+    setXp(prev => prev + challengeXp);
+    setProgress(prev => Math.min(100, prev + 5));
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F1115]">
@@ -65,82 +87,57 @@ export default function ChallengesScreen() {
               <View className="items-center">
                 <View className="flex-row items-center bg-[#5B8DEF]/10 border border-[#5B8DEF]/20 rounded-full px-4 py-1.5 mb-6 gap-2">
                   <Sparkles size={14} color="#5B8DEF" />
-                  <Text className="text-[#5B8DEF] text-[10px] font-black uppercase tracking-widest">Evolution Level 4</Text>
+                  <Text className="text-[#5B8DEF] text-[10px] font-black uppercase tracking-widest">Haji Festival Season</Text>
                 </View>
 
-                <Animated.View entering={ZoomIn.delay(300)} className="w-44 h-44 rounded-full bg-[#0F1115] items-center justify-center border-4 border-[#5B8DEF]/20 mb-4">
-                  <Text className="text-8xl">🐷</Text>
+                <Animated.View 
+                  style={mascotStyle}
+                  className="w-44 h-44 rounded-full bg-[#0F1115] items-center justify-center border-4 border-[#5B8DEF]/20 mb-4"
+                >
+                  <Text className="text-8xl">🦦</Text>
                   <View className="absolute -bottom-2 bg-[#00C853] px-3 py-1 rounded-full">
                     <Text className="text-white text-[10px] font-black">ACTIVE</Text>
                   </View>
                 </Animated.View>
 
-                <Text className="text-3xl font-black text-white mb-1 tracking-tight">Penny</Text>
-                <Text className="text-[#9CA3AF] text-sm font-bold mb-6">"You're doing great today!"</Text>
-
-                <View className="flex-row gap-6 mb-8">
-                  <View className="items-center">
-                    <View className="w-12 h-1.5 bg-[#2A2D34] rounded-full overflow-hidden mb-2">
-                      <View className="h-full bg-[#FF5252] w-[80%]" />
-                    </View>
-                    <Text className="text-[#9CA3AF] text-[8px] font-black uppercase">Happiness</Text>
-                  </View>
-                  <View className="items-center">
-                    <View className="w-12 h-1.5 bg-[#2A2D34] rounded-full overflow-hidden mb-2">
-                      <View className="h-full bg-[#00C853] w-[95%]" />
-                    </View>
-                    <Text className="text-[#9CA3AF] text-[8px] font-black uppercase">Discipline</Text>
-                  </View>
-                  <View className="items-center">
-                    <View className="w-12 h-1.5 bg-[#2A2D34] rounded-full overflow-hidden mb-2">
-                      <View className="h-full bg-[#5B8DEF] w-[60%]" />
-                    </View>
-                    <Text className="text-[#9CA3AF] text-[8px] font-black uppercase">Energy</Text>
-                  </View>
-                </View>
+                <Text className="text-3xl font-black text-white mb-1 tracking-tight">Capy</Text>
+                <Text className="text-[#9CA3AF] text-sm font-bold mb-6">"Let's save for Qurban together!"</Text>
 
                 <View className="w-full">
                   <View className="flex-row justify-between mb-2 px-2">
-                    <Text className="text-white text-[10px] font-black uppercase tracking-wider">Evolution Progress</Text>
-                    <Text className="text-[#5B8DEF] text-[10px] font-black">68%</Text>
+                    <Text className="text-white text-[10px] font-black uppercase tracking-wider">Level Progress</Text>
+                    <Text className="text-[#5B8DEF] text-[10px] font-black">{Math.round(progress)}%</Text>
                   </View>
                   <View className="w-full h-3 bg-[#0F1115] rounded-full overflow-hidden border border-[#2A2D34]">
-                    <LinearGradient
-                      colors={['#5B8DEF', '#7C4DFF']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      className="h-full w-[68%]"
-                    />
+                    <View 
+                      style={{ width: `${progress}%` }} 
+                      className="h-full"
+                    >
+                      <LinearGradient
+                        colors={['#5B8DEF', '#7C4DFF']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        className="flex-1"
+                      />
+                    </View>
                   </View>
-                  <Text className="text-[#9CA3AF] text-[10px] font-bold text-center mt-2 italic">Complete 3 more challenges to evolve</Text>
+                  <Text className="text-[#9CA3AF] text-[10px] font-bold text-center mt-2 italic">Total XP: {xp.toLocaleString()}</Text>
                 </View>
               </View>
             </LinearGradient>
           </Animated.View>
 
-          {/* DAILY CARE */}
-          <View className="flex-row gap-3">
-            <TouchableOpacity className="flex-1 bg-[#1A1D24] border border-[#2A2D34] rounded-[24px] p-5 items-center flex-row justify-center gap-2">
-              <Gift size={20} color="#FFD600" />
-              <Text className="text-white font-black text-xs uppercase tracking-widest">Feed Penny</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="flex-1 bg-[#1A1D24] border border-[#2A2D34] rounded-[24px] p-5 items-center flex-row justify-center gap-2">
-              <Users size={20} color="#5B8DEF" />
-              <Text className="text-white font-black text-xs uppercase tracking-widest">Collect Daily</Text>
-            </TouchableOpacity>
-          </View>
-
           {/* ACTIVE CHALLENGES */}
           <View>
             <View className="flex-row items-center justify-between mb-4 px-1">
-              <Text className="text-white font-black text-2xl tracking-tighter">Active Challenges</Text>
+              <Text className="text-white font-black text-2xl tracking-tighter">Haji Challenges</Text>
               <TouchableOpacity>
                 <Text className="text-[#5B8DEF] text-sm font-black uppercase">View All</Text>
               </TouchableOpacity>
             </View>
 
             <View className="gap-4">
-              {challenges.map((challenge, index) => (
+              {challengesData.map((challenge, index) => (
                 <Animated.View
                   key={challenge.id}
                   entering={FadeInRight.delay(400 + index * 100).duration(400)}
@@ -185,17 +182,12 @@ export default function ChallengesScreen() {
                             <Text className="text-white font-black text-base">+{challenge.xp}</Text>
                             <Text className="text-[#9CA3AF] text-[8px] font-black uppercase">XP</Text>
                           </View>
-                          <View className="items-center">
-                            <Text className="text-[#FFD600] font-black text-base">+{challenge.coins}</Text>
-                            <Text className="text-[#9CA3AF] text-[8px] font-black uppercase">Coins</Text>
-                          </View>
-                          <View className="items-center">
-                            <Text className="text-[#5B8DEF] font-black text-base">+{challenge.energy}</Text>
-                            <Text className="text-[#9CA3AF] text-[8px] font-black uppercase">Energy</Text>
-                          </View>
                         </View>
-                        <TouchableOpacity className="bg-[#5B8DEF] px-6 py-3 rounded-2xl">
-                          <Text className="text-white font-black text-xs uppercase">Join</Text>
+                        <TouchableOpacity 
+                          onPress={() => handleMarkAsDone(challenge.xp)}
+                          className="bg-[#5B8DEF] px-6 py-3 rounded-2xl"
+                        >
+                          <Text className="text-white font-black text-xs uppercase">Mark as Done</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -204,44 +196,6 @@ export default function ChallengesScreen() {
               ))}
             </View>
           </View>
-
-          {/* SQUAD */}
-          <View className="mb-12">
-            <View className="flex-row items-center justify-between mb-6 px-1">
-              <Text className="text-white font-black text-2xl tracking-tighter">Your Squad</Text>
-              <TouchableOpacity className="bg-[#5B8DEF]/10 border border-[#5B8DEF]/20 px-4 py-2 rounded-full">
-                <Text className="text-[#5B8DEF] text-[10px] font-black uppercase tracking-widest">Invite Friends</Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-6 px-6">
-              <View className="flex-row gap-4">
-                {[
-                  { name: 'Sarah', avatar: '🐱', lvl: 10, color: '#FF5252' },
-                  { name: 'Zack', avatar: '🦊', lvl: 8, color: '#FFD600' },
-                  { name: 'Mei', avatar: '🐨', lvl: 11, color: '#00C853' },
-                  { name: 'Amir', avatar: '🦁', lvl: 4, color: '#7C4DFF' },
-                ].map((member, i) => (
-                  <TouchableOpacity key={i} className="bg-[#1A1D24] border-2 border-[#2A2D34] rounded-[40px] p-6 items-center w-36 shadow-lg">
-                    <View
-                      style={{ borderColor: member.color + '40' }}
-                      className="w-20 h-20 bg-[#0F1115] rounded-[28px] items-center justify-center mb-4 border-2"
-                    >
-                      <Text className="text-4xl">{member.avatar}</Text>
-                      <View className="absolute -top-2 -right-2 bg-white px-2 py-0.5 rounded-full">
-                        <Text className="text-[8px] font-black text-[#0F1115]">Lvl {member.lvl}</Text>
-                      </View>
-                    </View>
-                    <Text className="text-white font-black text-sm mb-1">{member.name}</Text>
-                    <View className="w-full h-1 bg-[#0F1115] rounded-full overflow-hidden mt-2">
-                      <View style={{ width: `${(member.lvl / 15) * 100}%`, backgroundColor: member.color }} className="h-full" />
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
-
         </View>
       </ScrollView>
     </SafeAreaView>

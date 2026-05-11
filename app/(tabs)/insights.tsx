@@ -129,7 +129,6 @@ export default function InsightsScreen() {
                 absolute
                 hasLegend={false}
               />
-              <View className="absolute w-20 h-20 rounded-full bg-[#1A1D24] items-center justify-center" style={{ top: 60, left: (screenWidth - 140) / 2 }} />
             </View>
             <View className="flex-row flex-wrap justify-between gap-y-4">
               {categoryData.map((category, index) => (

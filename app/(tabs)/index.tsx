@@ -1,19 +1,38 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
-import { Plus, Sparkles, Target, Zap, ChevronRight, TrendingDown } from 'lucide-react-native';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Platform, Modal } from 'react-native';
+import { Plus, Sparkles, Target, Zap, ChevronRight, TrendingDown, X, BookOpen } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInUp, FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import TopBar from '../components/TopBar';
 
 const knowledgeFeed = [
-  { title: 'Save 20% on groceries', description: 'Shop on weekdays instead of weekends', icon: Target, colors: ['#00C853', '#FFD600'] as const },
-  { title: 'Investment tip', description: 'Start with ASB for safe returns', icon: TrendingDown, colors: ['#5B8DEF', '#7C4DFF'] as const },
-  { title: 'Budget hack', description: 'Use the 50/30/20 rule', icon: Zap, colors: ['#7C4DFF', '#FF5252'] as const },
+  { 
+    title: 'Save 20% on groceries', 
+    description: 'Shop on weekdays instead of weekends', 
+    content: 'Recent studies show that grocery prices often fluctuate based on demand. Supermarkets tend to offer more discounts on Tuesdays and Wednesdays to attract shoppers during slow periods. Additionally, shopping during these times helps you avoid impulse buys that often happen in crowded weekend aisles.',
+    icon: Target, 
+    colors: ['#00C853', '#FFD600'] as const 
+  },
+  { 
+    title: 'Investment tip', 
+    description: 'Start with ASB for safe returns', 
+    content: 'Amanah Saham Bumiputera (ASB) is one of the most reliable investment vehicles in Malaysia. With consistent dividends and a fixed price per unit (for ASB 1), it is an excellent choice for building your emergency fund or long-term savings with minimal risk compared to the stock market.',
+    icon: TrendingDown, 
+    colors: ['#5B8DEF', '#7C4DFF'] as const 
+  },
+  { 
+    title: 'Budget hack', 
+    description: 'Use the 50/30/20 rule', 
+    content: 'The 50/30/20 rule is a simple yet effective budgeting method. Allocate 50% of your income to Needs (rent, bills), 30% to Wants (dining out, hobbies), and 20% to Savings or Debt Repayment. This ensures you are living within your means while consistently building your future wealth.',
+    icon: Zap, 
+    colors: ['#7C4DFF', '#FF5252'] as const 
+  },
 ];
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [selectedItem, setSelectedItem] = useState<typeof knowledgeFeed[0] | null>(null);
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F1115]">
@@ -70,6 +89,27 @@ export default function HomeScreen() {
             </View>
           </Animated.View>
 
+          <Animated.View
+            entering={FadeInDown.delay(250).duration(500)}
+            className="bg-[#1A1D24] border border-[#5B8DEF]/20 rounded-[24px] p-6 flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center gap-4">
+              <View className="w-12 h-12 rounded-full bg-[#5B8DEF]/20 items-center justify-center">
+                <Zap size={24} color="#5B8DEF" />
+              </View>
+              <View>
+                <Text className="text-white font-bold text-lg">Daily Quiz</Text>
+                <Text className="text-[#9CA3AF] text-sm font-medium">Test your knowledge & earn XP</Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => router.push('/daily-quiz')}
+              className="bg-[#5B8DEF] px-4 py-2 rounded-xl"
+            >
+              <Text className="text-white font-bold">Start</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
           <View>
             <Text className="text-white font-bold mb-4 text-xl tracking-tight">Knowledge Feed</Text>
             <View className="space-y-4 gap-4">
@@ -78,7 +118,7 @@ export default function HomeScreen() {
                 return (
                   <Animated.View key={index} entering={FadeInDown.delay(300 + index * 100)}>
                     <TouchableOpacity
-                      onPress={() => {}}
+                      onPress={() => setSelectedItem(item)}
                       className="w-full bg-[#1A1D24] border border-[#2A2D34] rounded-[24px] p-5 flex-row items-center gap-4 shadow-sm"
                     >
                       <LinearGradient
@@ -125,6 +165,59 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Detail Modal */}
+      <Modal
+        visible={selectedItem !== null}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setSelectedItem(null)}
+      >
+        <View className="flex-1 bg-black/60 justify-end">
+          <Animated.View 
+            entering={FadeInUp}
+            className="bg-[#1A1D24] rounded-t-[40px] p-8 pb-12 border-t border-white/10"
+          >
+            <View className="flex-row items-center justify-between mb-8">
+              <View className="flex-row items-center gap-4">
+                <View className="w-12 h-12 rounded-2xl bg-[#5B8DEF]/10 items-center justify-center">
+                  <BookOpen size={24} color="#5B8DEF" />
+                </View>
+                <Text className="text-white text-xl font-bold">Article Detail</Text>
+              </View>
+              <TouchableOpacity 
+                onPress={() => setSelectedItem(null)}
+                className="w-10 h-10 bg-white/5 rounded-full items-center justify-center"
+              >
+                <X size={20} color="#9CA3AF" />
+              </TouchableOpacity>
+            </View>
+
+            {selectedItem && (
+              <View>
+                <LinearGradient
+                  colors={selectedItem.colors}
+                  className="w-20 h-20 rounded-3xl items-center justify-center mb-6"
+                >
+                  <selectedItem.icon size={40} color="white" />
+                </LinearGradient>
+                <Text className="text-white text-3xl font-bold mb-2">{selectedItem.title}</Text>
+                <Text className="text-[#5B8DEF] font-bold mb-6 text-lg">{selectedItem.description}</Text>
+                <Text className="text-[#9CA3AF] text-base leading-relaxed">
+                  {selectedItem.content}
+                </Text>
+
+                <TouchableOpacity 
+                  onPress={() => setSelectedItem(null)}
+                  className="mt-10 bg-[#5B8DEF] py-4 rounded-2xl items-center"
+                >
+                  <Text className="text-white font-bold text-lg">Got it!</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </Animated.View>
+        </View>
+      </Modal>
 
       <Animated.View
         entering={ZoomIn.delay(800)}
