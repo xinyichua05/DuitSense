@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { 
   FadeInDown, 
@@ -10,9 +10,10 @@ import Animated, {
   withSequence, 
   withSpring
 } from 'react-native-reanimated';
-import { Sparkles } from 'lucide-react-native';
+import { Sparkles, Users } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import TopBar from '../components/TopBar';
+import { useXP } from '../XPContext';
 
 const challengesData = [
   {
@@ -47,9 +48,17 @@ const challengesData = [
   },
 ];
 
+const friends = [
+  { id: 1, avatar: '👨‍💼', name: 'Ahmad' },
+  { id: 2, avatar: '👩‍⚕️', name: 'Sarah' },
+  { id: 3, avatar: '👨‍🎨', name: 'Marcus' },
+  { id: 4, avatar: '👩‍💻', name: 'Priya' },
+  { id: 5, avatar: '👨‍🚀', name: 'Lin' },
+];
+
 export default function ChallengesScreen() {
   const router = useRouter();
-  const [xp, setXp] = useState(2247);
+  const { xp, addXP } = useXP();
   const [progress, setProgress] = useState(68);
   const mascotScale = useSharedValue(1);
 
@@ -65,7 +74,7 @@ export default function ChallengesScreen() {
     );
 
     // Update stats
-    setXp(prev => prev + challengeXp);
+    addXP(challengeXp);
     setProgress(prev => Math.min(100, prev + 5));
   };
 
@@ -75,7 +84,7 @@ export default function ChallengesScreen() {
         onSettingsClick={() => router.push('/settings')}
         onWrappedClick={() => router.push('/wrapped')}
       />
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} className="flex-1">
+      <ScrollView contentContainerStyle={{ paddingBottom: 140 }} className="flex-1">
         <View className="px-6 gap-6">
 
           {/* HERO AVATAR SECTION */}
@@ -196,6 +205,31 @@ export default function ChallengesScreen() {
               ))}
             </View>
           </View>
+
+          {/* FRIENDS ACTIVITY SECTION */}
+          <Animated.View 
+            entering={FadeInDown.delay(800)}
+            className="bg-[#1A1D24] border-2 border-[#2A2D34] rounded-[40px] p-6 mb-8"
+          >
+            <View className="flex-row items-center gap-2 mb-4">
+              <Users size={20} color="#5B8DEF" />
+              <Text className="text-white font-black text-lg tracking-tight">Friends in Challenges</Text>
+            </View>
+            <View className="flex-row items-center justify-around">
+              {friends.map((friend) => (
+                <View key={friend.id} className="items-center gap-1">
+                  <View className="w-12 h-12 bg-[#0F1115] rounded-full items-center justify-center border-2 border-[#5B8DEF]/30">
+                    <Text className="text-2xl">{friend.avatar}</Text>
+                  </View>
+                  <Text className="text-[#9CA3AF] text-[10px] font-bold">{friend.name}</Text>
+                </View>
+              ))}
+              <TouchableOpacity className="w-12 h-12 bg-[#5B8DEF]/10 rounded-full items-center justify-center border-2 border-dashed border-[#5B8DEF]/30">
+                <Text className="text-[#5B8DEF] text-xl font-bold">+</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+
         </View>
       </ScrollView>
     </SafeAreaView>

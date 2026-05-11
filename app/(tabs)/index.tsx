@@ -43,36 +43,44 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} className="flex-1">
         <View className="px-6 space-y-6 gap-6">
 
-          <Animated.View
-            entering={FadeInDown.delay(100).duration(500)}
-            className="bg-[#1A1D24] border border-[#2A2D34] rounded-[32px] p-6 shadow-2xl"
+          <TouchableOpacity 
+            onPress={() => router.push('/history')}
+            activeOpacity={0.7}
           >
-            <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-[#9CA3AF] text-sm font-medium">Monthly Spending</Text>
-              <Text className="text-[#00C853] text-sm font-bold">-12% vs last month</Text>
-            </View>
+            <Animated.View
+              entering={FadeInDown.delay(100).duration(500)}
+              className="bg-[#1A1D24] border border-[#2A2D34] rounded-[32px] p-6 shadow-2xl"
+            >
+              <View className="flex-row items-center justify-between mb-6">
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-[#9CA3AF] text-sm font-medium">Monthly Spending</Text>
+                  <ChevronRight size={14} color="#9CA3AF" />
+                </View>
+                <Text className="text-[#00C853] text-sm font-bold">-12% vs last month</Text>
+              </View>
 
-            <View className="flex-row items-baseline space-x-2 gap-1 mb-6">
-              <Text className="text-4xl font-bold text-white">RM 1,247</Text>
-              <Text className="text-[#9CA3AF] text-lg font-medium">/ RM 1,500</Text>
-            </View>
+              <View className="flex-row items-baseline space-x-2 gap-1 mb-6">
+                <Text className="text-4xl font-bold text-white">RM 1,247</Text>
+                <Text className="text-[#9CA3AF] text-lg font-medium">/ RM 1,500</Text>
+              </View>
 
-            <View className="w-full bg-[#0F1115] rounded-full h-4 overflow-hidden mb-3">
-              <Animated.View className="h-full w-[83%]">
-                <LinearGradient
-                  colors={['#5B8DEF', '#7C4DFF', '#00C853']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  className="flex-1"
-                />
-              </Animated.View>
-            </View>
+              <View className="w-full bg-[#0F1115] rounded-full h-4 overflow-hidden mb-3">
+                <Animated.View className="h-full w-[83%]">
+                  <LinearGradient
+                    colors={['#5B8DEF', '#7C4DFF', '#00C853']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    className="flex-1"
+                  />
+                </Animated.View>
+              </View>
 
-            <View className="flex-row items-center justify-between">
-              <Text className="text-[#9CA3AF] text-xs font-medium">RM 253 left</Text>
-              <Text className="text-[#5B8DEF] text-xs font-bold">83% used</Text>
-            </View>
-          </Animated.View>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-[#9CA3AF] text-xs font-medium">RM 253 left</Text>
+                <Text className="text-[#5B8DEF] text-xs font-bold">83% used</Text>
+              </View>
+            </Animated.View>
+          </TouchableOpacity>
 
           <Animated.View
             entering={FadeInDown.delay(200).duration(500)}
@@ -139,30 +147,6 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <View>
-            <Text className="text-white font-bold mb-4 text-xl tracking-tight">Quick Challenges</Text>
-            <View className="flex-row gap-4">
-              <Animated.View entering={ZoomIn.delay(600)} className="flex-1">
-                <View className="bg-[#1A1D24] border border-[#2A2D34] rounded-[24px] p-5">
-                  <View className="w-10 h-10 bg-[#00C853]/10 rounded-xl items-center justify-center mb-3">
-                    <Target size={20} color="#00C853" />
-                  </View>
-                  <Text className="text-white font-bold text-sm mb-1">No-Spend Weekend</Text>
-                  <Text className="text-[#00C853] text-xs font-bold">+100 XP</Text>
-                </View>
-              </Animated.View>
-
-              <Animated.View entering={ZoomIn.delay(700)} className="flex-1">
-                <View className="bg-[#1A1D24] border border-[#2A2D34] rounded-[24px] p-5">
-                  <View className="w-10 h-10 bg-[#FFD600]/10 rounded-xl items-center justify-center mb-3">
-                    <Zap size={20} color="#FFD600" />
-                  </View>
-                  <Text className="text-white font-bold text-sm mb-1">Save RM50 Today</Text>
-                  <Text className="text-[#FFD600] text-xs font-bold">+50 XP</Text>
-                </View>
-              </Animated.View>
-            </View>
-          </View>
         </View>
       </ScrollView>
 

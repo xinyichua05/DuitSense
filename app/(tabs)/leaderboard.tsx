@@ -5,8 +5,9 @@ import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { Trophy, TrendingUp, Gift } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import TopBar from '../components/TopBar';
+import { useXP } from '../XPContext';
 
-const globalLeaderboard = [
+const initialLeaderboard = [
   { rank: 1, name: 'Sarah M.', xp: 2847, avatar: '🏆', change: 2 },
   { rank: 2, name: 'Ahmad K.', xp: 2654, avatar: '🥈', change: -1 },
   { rank: 3, name: 'You (Amir)', xp: 2247, avatar: '🎯', change: 1, isUser: true },
@@ -21,6 +22,15 @@ const globalLeaderboard = [
 
 export default function LeaderboardScreen() {
   const router = useRouter();
+  const { xp } = useXP();
+
+  // Sort leaderboard with updated user XP
+  const globalLeaderboard = [...initialLeaderboard].map(player => 
+    player.isUser ? { ...player, xp } : player
+  ).sort((a, b) => b.xp - a.xp).map((player, index) => ({
+    ...player,
+    rank: index + 1
+  }));
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F1115]">
@@ -52,7 +62,7 @@ export default function LeaderboardScreen() {
                   </View>
                 </View>
                 <View className="items-end">
-                  <Text className="text-4xl font-black text-white">2,247</Text>
+                  <Text className="text-4xl font-black text-white">{xp.toLocaleString()}</Text>
                   <Text className="text-white/80 font-bold text-sm">Total XP</Text>
                 </View>
               </View>

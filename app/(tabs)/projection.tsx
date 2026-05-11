@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { View, Text, ScrollView, SafeAreaView, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -18,7 +18,7 @@ export default function FutureProjectionScreen() {
   const currentAge = 22;
   const baseMonthlySavings = 1000; // Base savings
 
-  const generateData = () => {
+  const chartData = useMemo(() => {
     const labels = [];
     const currentData = [];
     const improvedData = [];
@@ -35,33 +35,35 @@ export default function FutureProjectionScreen() {
       improvedData.push(improved / 1000); // in 'k'
     }
 
-    return { labels, currentData, improvedData };
-  };
+    return {
+      labels,
+      datasets: [
+        {
+          data: currentData,
+          color: (opacity = 1) => `rgba(156, 163, 175, ${opacity * 0.3})`,
+          strokeWidth: 2,
+        },
+        {
+          data: improvedData,
+          color: (opacity = 1) => `rgba(124, 77, 255, ${opacity})`,
+          strokeWidth: 4,
+        },
+      ],
+      legend: ["Current Path", "Improved Path"]
+    };
+  }, [savingsBoost]);
 
-  const { labels, currentData, improvedData } = generateData();
-
-  // Values for the specific target age (interpolated or closest)
-  const yearsToTarget = targetAge - currentAge;
-  const currentValue = yearsToTarget * 12 * baseMonthlySavings;
-  const improvedValue = yearsToTarget * 12 * (baseMonthlySavings + savingsBoost);
-  const potentialGain = improvedValue - currentValue;
-
-  const chartData = {
-    labels,
-    datasets: [
-      {
-        data: currentData,
-        color: (opacity = 1) => `rgba(156, 163, 175, ${opacity * 0.3})`,
-        strokeWidth: 2,
-      },
-      {
-        data: improvedData,
-        color: (opacity = 1) => `rgba(124, 77, 255, ${opacity})`,
-        strokeWidth: 4,
-      },
-    ],
-    legend: ["Current Path", "Improved Path"]
-  };
+  // Values for the specific target age
+  const { currentValue, improvedValue, potentialGain } = useMemo(() => {
+    const yearsToTarget = targetAge - currentAge;
+    const current = yearsToTarget * 12 * baseMonthlySavings;
+    const improved = yearsToTarget * 12 * (baseMonthlySavings + savingsBoost);
+    return {
+      currentValue: current,
+      improvedValue: improved,
+      potentialGain: improved - current
+    };
+  }, [targetAge, savingsBoost]);
 
   const chartConfig = {
     backgroundGradientFrom: '#1A1D24',
@@ -147,7 +149,7 @@ export default function FutureProjectionScreen() {
             className="bg-[#1A1D24] border border-[#2A2D34] rounded-[24px] p-6 shadow-lg"
           >
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-white text-base font-bold tracking-tight">Target Age: <Text className="text-[#5B8DEF]">{targetAge} years</Text></Text>
+              <Text className="text-white text-base font-bold tracking-tight">Target Age: <Text className="text-[#5B8DEF]">{Math.round(targetAge)} years</Text></Text>
             </View>
             <Slider
               style={{ width: '100%', height: 40 }}
@@ -155,7 +157,7 @@ export default function FutureProjectionScreen() {
               maximumValue={65}
               step={1}
               value={targetAge}
-              onValueChange={setTargetAge}
+              onValueChange={(val) => setTargetAge(val)}
               minimumTrackTintColor="#5B8DEF"
               maximumTrackTintColor="#0F1115"
               thumbTintColor="#ffffff"
@@ -168,7 +170,7 @@ export default function FutureProjectionScreen() {
             className="bg-[#1A1D24] border border-[#2A2D34] rounded-[24px] p-6 shadow-lg"
           >
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-white text-base font-bold tracking-tight">Monthly Savings Boost: <Text className="text-[#00C853]">+RM {savingsBoost}</Text></Text>
+              <Text className="text-white text-base font-bold tracking-tight">Monthly Savings Boost: <Text className="text-[#00C853]">+RM {Math.round(savingsBoost)}</Text></Text>
             </View>
             <Slider
               style={{ width: '100%', height: 40 }}
@@ -176,7 +178,7 @@ export default function FutureProjectionScreen() {
               maximumValue={5000}
               step={50}
               value={savingsBoost}
-              onValueChange={setSavingsBoost}
+              onValueChange={(val) => setSavingsBoost(val)}
               minimumTrackTintColor="#00C853"
               maximumTrackTintColor="#0F1115"
               thumbTintColor="#ffffff"
