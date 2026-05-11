@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Bell, Settings, Sparkles } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface TopBarProps {
   userName?: string;
@@ -15,8 +16,9 @@ export default function TopBar({
   onSettingsClick,
   onWrappedClick
 }: TopBarProps) {
+  const insets = useSafeAreaInsets();
   return (
-    <View className="flex-row items-center justify-between p-6 pb-4">
+    <View className="flex-row items-center justify-between px-6 pb-4" style={{ paddingTop: insets.top + 12 }}>
       <View>
         <Text className="text-[#9CA3AF] text-sm font-medium">{greeting}</Text>
         <Text className="text-3xl font-bold text-white tracking-tight">{userName}</Text>
