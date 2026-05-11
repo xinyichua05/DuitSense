@@ -5,6 +5,7 @@ import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withTiming, Eas
 import { Gift, Sparkles, X } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path, Circle, G, Text as SvgText } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const rewards = [
   { label: 'RM5 Grab', color: '#FFD600', icon: '🚗' },
@@ -19,6 +20,7 @@ const rewards = [
 
 export default function SpinWheelScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [isSpinning, setIsSpinning] = useState(false);
   const [showReward, setShowReward] = useState(false);
   const [wonReward, setWonReward] = useState<typeof rewards[0] | null>(null);
@@ -62,7 +64,7 @@ export default function SpinWheelScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0F1115]">
+    <View className="flex-1 bg-[#0F1115]">
       <LinearGradient
         colors={['rgba(255, 214, 0, 0.1)', 'rgba(0, 200, 83, 0.1)']}
         className="absolute inset-0"
@@ -71,7 +73,8 @@ export default function SpinWheelScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <TouchableOpacity
           onPress={() => router.back()}
-          className="absolute top-6 right-6 w-12 h-12 bg-[#1A1D24]/90 border border-white/20 rounded-xl items-center justify-center z-50 shadow-lg"
+          className="absolute right-6 w-12 h-12 bg-[#1A1D24]/90 border border-white/20 rounded-xl items-center justify-center z-50 shadow-lg"
+          style={{ top: insets.top + 16 }}
         >
           <X size={24} color="white" />
         </TouchableOpacity>
@@ -215,6 +218,6 @@ export default function SpinWheelScreen() {
           </Animated.View>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from 'react-na
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Calendar, TrendingDown, TrendingUp } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const mockTransactions = [
   { id: 1, title: 'Village Grocer', amount: -145.20, date: 'May 10, 2026', category: 'Groceries' },
@@ -14,10 +15,14 @@ const mockTransactions = [
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0F1115]">
-      <View className="flex-row items-center px-6 py-4 border-b border-white/5">
+    <View className="flex-1 bg-[#0F1115]">
+      <View 
+        className="flex-row items-center px-6 pb-6 border-b border-white/5"
+        style={{ paddingTop: insets.top + 16 }}
+      >
         <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 items-center justify-center bg-white/5 rounded-full">
           <ChevronLeft size={24} color="white" />
         </TouchableOpacity>
