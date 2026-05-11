@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const { analyzeMonthlyBehaviour, analyzeCategoryBehaviour } = require('../ai_personalisation/behaviour_mirror');
 const { getPeerComparisonData } = require('../data_integration/peer_compare_engine');
-const { getCache, setCache } = require('../data_integration/redis_cache');
+const { getInsightCache, setInsightCache } = require('../data_integration/redis_cache');
 
 // @desc    Get monthly behaviour insight
 // @route   POST /api/insights/monthly
@@ -16,10 +16,8 @@ const getMonthlyInsight = asyncHandler(async (req, res) => {
     throw new Error('Month parameter is required');
   }
 
-  const cacheKey = `insight_monthly_${userId}_${month}`;
-  
   // 1. Check cache (TTL 24h)
-  const cachedInsight = await getCache(cacheKey);
+  const cachedInsight = await getInsightCache(userId, month);
   if (cachedInsight) {
     return res.status(200).json({ success: true, data: cachedInsight, cached: true });
   }
@@ -42,7 +40,7 @@ const getMonthlyInsight = asyncHandler(async (req, res) => {
   }
 
   // 4. Cache and Return
-  await setCache(cacheKey, analysisResult, 86400); // 24h
+  await setInsightCache(userId, month, analysisResult);
 
   res.status(200).json({
     success: true,
@@ -58,9 +56,7 @@ const getCategoryInsight = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { month } = req.body;
 
-  const cacheKey = `insight_category_${userId}_${month}`;
-  
-  const cachedInsight = await getCache(cacheKey);
+  const cachedInsight = await getInsightCache(userId, month);
   if (cachedInsight) {
     return res.status(200).json({ success: true, data: cachedInsight, cached: true });
   }
@@ -80,7 +76,7 @@ const getCategoryInsight = asyncHandler(async (req, res) => {
     };
   }
 
-  await setCache(cacheKey, analysisResult, 86400);
+  await setInsightCache(userId, month, analysisResult);
 
   res.status(200).json({
     success: true,
